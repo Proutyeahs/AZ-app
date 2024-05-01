@@ -4,6 +4,7 @@ import { RootState } from '../app/store';
 import { afternoonZoologistApi } from './afternoonZoologist.service';
 
 export type Tile = {
+    ID: number,
     landscape: string,
     description: string,
     accessible: boolean,

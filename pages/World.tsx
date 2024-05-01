@@ -13,9 +13,10 @@ export const World: React.FC = () => {
     return (
         <div>
             <h1>AZ-app start</h1>
+            {/* placeholder list */}
             <ul>
                 {tiles.map((tile: Tile) => (
-                    <li>
+                    <li key={tile.ID}>
                         <div>{tile.landscape}</div>
                         <div>{tile.description}</div>
                         <div>{tile.accessible ? "accessible" : "inaccessible"}</div>
