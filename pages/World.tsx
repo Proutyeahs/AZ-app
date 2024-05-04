@@ -1,28 +1,51 @@
-import React from "react";
-import { Tile, selectTiles } from "../slices/afternoonZoologistSlice";
+import React, { useEffect } from "react";
+import { worldGridInit, selectGrid, selectTiles } from "../slices/afternoonZoologistSlice";
 
-import { useAppSelector } from "../app/store";
+import { useAppDispatch, useAppSelector } from "../app/store";
 import { useGetTilesQuery } from "../slices/afternoonZoologist.service";
-
+import { Card } from "@mui/material";
+import { View, Text, Dimensions } from "react-native";
 
 export const World: React.FC = () => {
-    const tiles = useAppSelector(selectTiles);
+  useGetTilesQuery();
 
-    useGetTilesQuery();
+  const dispatch = useAppDispatch();
+  const screenWidth = Dimensions.get('window').width;
+  //const screenHeight = Dimensions.get('window').height;
+  const tiles = useAppSelector(selectTiles);
+  const worldGrid = useAppSelector(selectGrid);
 
-    return (
-        <div>
-            <h1>AZ-app start</h1>
-            {/* placeholder list */}
-            <ul>
-                {tiles.map((tile: Tile) => (
-                    <li key={tile.ID}>
-                        <div>{tile.landscape}</div>
-                        <div>{tile.description}</div>
-                        <div>{tile.accessible ? "accessible" : "inaccessible"}</div>
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
+  useEffect(() => {
+    dispatch(worldGridInit());
+  }, [tiles]);
+
+  return (
+    <View 
+      style={{
+        width: screenWidth,
+        marginTop: 50,
+        //height: screenHeight,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Card
+        style={{
+          outline: '.5px solid black',
+        }}
+      >
+        {worldGrid.map((row, rowIndex) => (
+          <View key={rowIndex} style={{ flexDirection: 'row' }}>
+            {row.map((cell, cellIndex) => (
+              <View key={cellIndex} style={{ width: 30, height: 30, borderWidth: .5, borderColor: 'black', alignItems: 'center', justifyContent: 'center', backgroundColor: cell.x === 5 && cell.y === 5 ? 'gold' : 'transparent' }}>
+                {cell.tile && cell.tile.landscape ? <Text>{cell.tile.landscape[0]}</Text> : null}
+              </View>
+            ))}
+          </View>
+        ))}
+      </Card>
+    </View>
+  );  
 };

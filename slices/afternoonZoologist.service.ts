@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Tile } from './afternoonZoologistSlice';
+import { Tile } from '../resources/types';
 
 export const afternoonZoologistApi = createApi({
   reducerPath: 'afternoonZoologistApi',
