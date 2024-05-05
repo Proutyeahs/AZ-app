@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { worldGridInit, selectGrid, selectTiles } from "../slices/afternoonZoologistSlice";
 
 import { useAppDispatch, useAppSelector } from "../app/store";
 import { useGetTilesQuery } from "../slices/afternoonZoologist.service";
 import { Card } from "@mui/material";
-import { View, Text, Dimensions } from "react-native";
+import { View, Text, Dimensions, TouchableOpacity } from "react-native";
 
 export const World: React.FC = () => {
   useGetTilesQuery();
@@ -14,10 +14,15 @@ export const World: React.FC = () => {
   //const screenHeight = Dimensions.get('window').height;
   const tiles = useAppSelector(selectTiles);
   const worldGrid = useAppSelector(selectGrid);
+  const [chosenTile, setChosenTile] = useState({ x: 6, y: 6,});
 
   useEffect(() => {
     dispatch(worldGridInit());
   }, [tiles]);
+
+  const setTileGold = (x: number, y: number) => {
+    return (x === 5 && y === 5) || (x === chosenTile.x && y === chosenTile.y) ? 'gold' : 'transparent';
+  }
 
   return (
     <View 
@@ -39,13 +44,25 @@ export const World: React.FC = () => {
         {worldGrid.map((row, rowIndex) => (
           <View key={rowIndex} style={{ flexDirection: 'row' }}>
             {row.map((cell, cellIndex) => (
-              <View key={cellIndex} style={{ width: 30, height: 30, borderWidth: .5, borderColor: 'black', alignItems: 'center', justifyContent: 'center', backgroundColor: cell.x === 5 && cell.y === 5 ? 'gold' : 'transparent' }}>
-                {cell.tile && cell.tile.landscape ? <Text>{cell.tile.landscape[0]}</Text> : null}
-              </View>
+              <TouchableOpacity 
+                key={cellIndex}
+                style={{
+                  width: 30, 
+                  height: 30, 
+                  borderWidth: 0.5, 
+                  borderColor: 'black', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  backgroundColor: setTileGold(cell.x, cell.y),
+                }}
+                onPress={() => setChosenTile({ x: cell.x, y: cell.y })}
+              >
+                <Text>{cell.tile?.landscape[0]}</Text>
+              </TouchableOpacity>
             ))}
           </View>
         ))}
       </Card>
     </View>
-  );  
+  );
 };
