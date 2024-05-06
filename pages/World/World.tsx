@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { worldGridInit, selectGrid, selectTiles } from "../slices/afternoonZoologistSlice";
+import { worldGridInit, selectGrid, selectTiles } from "../../slices/afternoonZoologistSlice";
 
-import { useAppDispatch, useAppSelector } from "../app/store";
-import { useGetTilesQuery } from "../slices/afternoonZoologist.service";
-import { Card } from "@mui/material";
+import { useAppDispatch, useAppSelector } from "../../app/store";
+import { useGetTilesQuery } from "../../slices/afternoonZoologist.service";
 import { View, Text, Dimensions, TouchableOpacity } from "react-native";
+import { Path } from "./Path";
+import { WorldGrid } from "../../resources/types";
 
 export const World: React.FC = () => {
   useGetTilesQuery();
 
   const dispatch = useAppDispatch();
   const screenWidth = Dimensions.get('window').width;
-  //const screenHeight = Dimensions.get('window').height;
   const tiles = useAppSelector(selectTiles);
   const worldGrid = useAppSelector(selectGrid);
-  const [chosenTile, setChosenTile] = useState({ x: 6, y: 6,});
+  const [chosenTile, setChosenTile] = useState<WorldGrid>({ x: 5, y: 5, tile: { ID: 0, landscape: '', description: '', accessible: false }});
+  const tileSize = 30;
 
   useEffect(() => {
     dispatch(worldGridInit());
@@ -29,16 +30,16 @@ export const World: React.FC = () => {
       style={{
         width: screenWidth,
         marginTop: 50,
-        //height: screenHeight,
-        display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
       }}
     >
-      <Card
+      <View
         style={{
-          outline: '.5px solid black',
+          position: 'relative',
+          borderWidth: 0.5,
+          borderColor: 'black',
         }}
       >
         {worldGrid.map((row, rowIndex) => (
@@ -47,22 +48,23 @@ export const World: React.FC = () => {
               <TouchableOpacity 
                 key={cellIndex}
                 style={{
-                  width: 30, 
-                  height: 30, 
-                  borderWidth: 0.5, 
-                  borderColor: 'black', 
-                  alignItems: 'center', 
+                  width: tileSize,
+                  height: tileSize,
+                  borderWidth: 0.5,
+                  borderColor: 'black',
+                  alignItems: 'center',
                   justifyContent: 'center',
                   backgroundColor: setTileGold(cell.x, cell.y),
                 }}
-                onPress={() => setChosenTile({ x: cell.x, y: cell.y })}
+                onPress={() => setChosenTile({ x: cellIndex, y: rowIndex, tile: cell.tile })}
               >
                 <Text>{cell.tile?.landscape[0]}</Text>
               </TouchableOpacity>
             ))}
           </View>
-        ))}
-      </Card>
+        ))} 
+        {Path(tileSize, chosenTile)}
+      </View>
     </View>
   );
 };

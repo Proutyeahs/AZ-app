@@ -8,11 +8,13 @@ import { getRandomTile } from '../resources/utilities';
 export type AfternoonZoologistState = {
     tiles : Tile[];
     worldGrid: WorldGrid[][];
+    path: WorldGrid[];
 };
 
 const initialState: AfternoonZoologistState = {
     tiles : [],
-    worldGrid: []
+    worldGrid: [],
+    path: [],
 };
 
 export const afternoonZoologistSlice = createSlice({
@@ -41,7 +43,28 @@ export const afternoonZoologistSlice = createSlice({
                 updatedGrid.push(row);
             }
             state.worldGrid = updatedGrid;
-        }
+        },
+        calculatePath: (state, action: PayloadAction<WorldGrid>) => {
+            const end = action.payload;
+            const path: WorldGrid[] = [];
+            
+            const current = { x: 5, y: 5};
+          
+            while (current.x !== end.x || current.y !== end.y) {
+              path.push({ x: current.x, y: current.y, tile: state.worldGrid[current.y][current.x].tile});
+
+              if (current.x !== end.x && current.y !== end.y) {
+                current.x += (end.x > current.x) ? 1 : -1;
+                current.y += (end.y > current.y) ? 1 : -1;
+              } else if (current.x !== end.x) {
+                current.x += (end.x > current.x) ? 1 : -1;
+              } else if (current.y !== end.y) {
+                current.y += (end.y > current.y) ? 1 : -1;
+              }
+            }
+            path.push(end);
+            state.path = path;
+          }
     },
     extraReducers: (builder) => {
         builder
@@ -55,8 +78,10 @@ export const afternoonZoologistSlice = createSlice({
 });
 
 export const { 
-    worldGridInit
+    worldGridInit,
+    calculatePath,
  } = afternoonZoologistSlice.actions;
 
 export const selectTiles = (state: RootState) => state.afternoonZoologist.tiles;
 export const selectGrid = (state: RootState) => state.afternoonZoologist.worldGrid;
+export const selectPath = (state: RootState) => state.afternoonZoologist.path;
