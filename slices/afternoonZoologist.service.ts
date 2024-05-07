@@ -6,7 +6,7 @@ export const afternoonZoologistApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: 'http://localhost:3000',
     prepareHeaders(headers) {
-        headers.set('Content-type', 'application/json');
+      headers.set('Content-type', 'application/json');
       return headers;
     }
   }),

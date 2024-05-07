@@ -25,7 +25,7 @@ export const World: React.FC = () => {
   }
 
   return (
-    <View 
+    <View
       style={{
         width: screenWidth,
         marginTop: 50,
@@ -44,7 +44,7 @@ export const World: React.FC = () => {
         {worldGrid.map((row, rowIndex) => (
           <View key={rowIndex} style={{ flexDirection: 'row' }}>
             {row.map((cell, cellIndex) => (
-              <TouchableOpacity 
+              <TouchableOpacity
                 key={cellIndex}
                 style={{
                   width: tileSize,
@@ -61,7 +61,7 @@ export const World: React.FC = () => {
               </TouchableOpacity>
             ))}
           </View>
-        ))} 
+        ))}
         {Path(tileSize, destination)}
       </View>
     </View>

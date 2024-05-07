@@ -6,17 +6,17 @@ import { WorldGrid, Tile } from '../resources/types';
 import { getRandomTile } from '../resources/utilities';
 
 export type AfternoonZoologistState = {
-    tiles : Tile[];
+    tiles: Tile[];
     worldGrid: WorldGrid[][];
     path: WorldGrid[];
     destination: WorldGrid;
 };
 
 const initialState: AfternoonZoologistState = {
-    tiles : [],
+    tiles: [],
     worldGrid: [],
     path: [],
-    destination: { x: 5, y: 5, tile: { ID: 0, landscape: '', description: '', accessible: false }},
+    destination: { x: 5, y: 5, tile: { ID: 0, landscape: '', description: '', accessible: false } },
 };
 
 export const afternoonZoologistSlice = createSlice({
@@ -52,24 +52,24 @@ export const afternoonZoologistSlice = createSlice({
         calculatePath: (state, action: PayloadAction<WorldGrid>) => {
             const end = action.payload;
             const path: WorldGrid[] = [];
-            
-            const current = { x: 5, y: 5};
-          
-            while (current.x !== end.x || current.y !== end.y) {
-              path.push({ x: current.x, y: current.y, tile: state.worldGrid[current.y][current.x].tile});
 
-              if (current.x !== end.x && current.y !== end.y) {
-                current.x += (end.x > current.x) ? 1 : -1;
-                current.y += (end.y > current.y) ? 1 : -1;
-              } else if (current.x !== end.x) {
-                current.x += (end.x > current.x) ? 1 : -1;
-              } else if (current.y !== end.y) {
-                current.y += (end.y > current.y) ? 1 : -1;
-              }
+            const current = { x: 5, y: 5 };
+
+            while (current.x !== end.x || current.y !== end.y) {
+                path.push({ x: current.x, y: current.y, tile: state.worldGrid[current.y][current.x].tile });
+
+                if (current.x !== end.x && current.y !== end.y) {
+                    current.x += (end.x > current.x) ? 1 : -1;
+                    current.y += (end.y > current.y) ? 1 : -1;
+                } else if (current.x !== end.x) {
+                    current.x += (end.x > current.x) ? 1 : -1;
+                } else if (current.y !== end.y) {
+                    current.y += (end.y > current.y) ? 1 : -1;
+                }
             }
             path.push(end);
             state.path = path;
-          },
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -82,11 +82,11 @@ export const afternoonZoologistSlice = createSlice({
     }
 });
 
-export const { 
+export const {
     worldGridInit,
     calculatePath,
     setDestination
- } = afternoonZoologistSlice.actions;
+} = afternoonZoologistSlice.actions;
 
 export const selectTiles = (state: RootState) => state.afternoonZoologist.tiles;
 export const selectGrid = (state: RootState) => state.afternoonZoologist.worldGrid;
