@@ -5,16 +5,15 @@ import { useAppDispatch, useAppSelector } from "../../app/store";
 import { calculatePath } from "../../slices/afternoonZoologistSlice";
 import { selectPath } from "../../slices/afternoonZoologistSlice";
 
-export const Path = (tileSize: number, chosenTile: WorldGrid) => {
+export const Path = (tileSize: number, destination: WorldGrid) => {
     const dispatch = useAppDispatch();
-    const selectedPath: WorldGrid[] = useAppSelector(selectPath);
+    const path: WorldGrid[] = useAppSelector(selectPath);
 
     useEffect(() => {
-        dispatch(calculatePath(chosenTile));
-    }, [chosenTile]);
+        dispatch(calculatePath(destination));
+    }, [destination]);
 
-    if (selectedPath) {
-        const path = selectedPath as WorldGrid[];
+    if (path) {
         const lines = [];
 
         for (let i = 1; i < path.length; i++) {

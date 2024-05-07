@@ -9,12 +9,14 @@ export type AfternoonZoologistState = {
     tiles : Tile[];
     worldGrid: WorldGrid[][];
     path: WorldGrid[];
+    destination: WorldGrid;
 };
 
 const initialState: AfternoonZoologistState = {
     tiles : [],
     worldGrid: [],
     path: [],
+    destination: { x: 5, y: 5, tile: { ID: 0, landscape: '', description: '', accessible: false }},
 };
 
 export const afternoonZoologistSlice = createSlice({
@@ -29,7 +31,7 @@ export const afternoonZoologistSlice = createSlice({
                 const row: WorldGrid[] = [];
                 for (let x = 0; x < 11; x++) {
                     let tile: Tile;
-                    if (x === 6 && y === 6) {
+                    if (x === 5 && y === 5) {
                         tile = centerTile;
                     } else {
                         if (Math.random() < 0.9) {
@@ -43,6 +45,9 @@ export const afternoonZoologistSlice = createSlice({
                 updatedGrid.push(row);
             }
             state.worldGrid = updatedGrid;
+        },
+        setDestination: (state, action: PayloadAction<WorldGrid>) => {
+            state.destination = action.payload;
         },
         calculatePath: (state, action: PayloadAction<WorldGrid>) => {
             const end = action.payload;
@@ -64,7 +69,7 @@ export const afternoonZoologistSlice = createSlice({
             }
             path.push(end);
             state.path = path;
-          }
+          },
     },
     extraReducers: (builder) => {
         builder
@@ -80,8 +85,10 @@ export const afternoonZoologistSlice = createSlice({
 export const { 
     worldGridInit,
     calculatePath,
+    setDestination
  } = afternoonZoologistSlice.actions;
 
 export const selectTiles = (state: RootState) => state.afternoonZoologist.tiles;
 export const selectGrid = (state: RootState) => state.afternoonZoologist.worldGrid;
 export const selectPath = (state: RootState) => state.afternoonZoologist.path;
+export const selectDestination = (state: RootState) => state.afternoonZoologist.destination;
