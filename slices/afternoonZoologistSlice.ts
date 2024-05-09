@@ -34,6 +34,7 @@ export const afternoonZoologistSlice = createSlice({
                     if (x === 5 && y === 5) {
                         tile = centerTile;
                     } else {
+                        // update to get tiles based on surrounding tiles
                         if (Math.random() < 0.9) {
                             tile = centerTile;
                         } else {
@@ -52,7 +53,6 @@ export const afternoonZoologistSlice = createSlice({
         calculatePath: (state, action: PayloadAction<WorldGrid>) => {
             const end = action.payload;
             const path: WorldGrid[] = [];
-
             const current = { x: 5, y: 5 };
 
             while (current.x !== end.x || current.y !== end.y) {
@@ -70,6 +70,48 @@ export const afternoonZoologistSlice = createSlice({
             path.push(end);
             state.path = path;
         },
+        shiftGrid: (state, action: PayloadAction<{ dx: number; dy: number }>) => {
+            const { dx, dy } = action.payload;
+            const newGrid = Array.from({ length: 11 }, () => new Array(11).fill(null));
+
+            for (let y = 0; y < 11; y++) {
+                for (let x = 0; x < 11; x++) {
+                    const newX = x + dx;
+                    const newY = y + dy;
+
+                    if (newX >= 0 && newX < 11 && newY >= 0 && newY < 11) {
+                        newGrid[y][x] = state.worldGrid[newY][newX].tile;
+                    } else {
+                        // update to get tiles based on surrounding tiles
+                        let randomTile;
+                        if ((x === 0 && dx === -1) || (x === 10 && dx === 1) || (y === 0 && dy === -1) || (y === 10 && dy === 1)) {
+                            randomTile = getRandomTile(state.tiles);
+                        } else {
+                            const adjY = y + (dy !== 0 ? dy : 0);
+                            const adjX = x + (dx !== 0 ? dx : 0);
+                            randomTile = state.worldGrid[adjY][adjX].tile;
+                        }
+                        newGrid[y][x] = randomTile;
+                    }
+                }
+            }
+
+            for (let y = 0; y < 11; y++) {
+                for (let x = 0; x < 11; x++) {
+                    state.worldGrid[y][x].tile = newGrid[y][x];
+                }
+            }
+
+            const newDestinationX = state.destination.x - dx;
+            const newDestinationY = state.destination.y - dy;
+
+            state.destination = {
+                ...state.destination,
+                x: newDestinationX,
+                y: newDestinationY,
+                tile: state.worldGrid[newDestinationY][newDestinationX].tile
+            };
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -85,7 +127,8 @@ export const afternoonZoologistSlice = createSlice({
 export const {
     worldGridInit,
     calculatePath,
-    setDestination
+    setDestination,
+    shiftGrid,
 } = afternoonZoologistSlice.actions;
 
 export const selectTiles = (state: RootState) => state.afternoonZoologist.tiles;

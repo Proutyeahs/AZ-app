@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { worldGridInit, selectGrid, selectTiles, setDestination, selectDestination } from "../../slices/afternoonZoologistSlice";
+import React, { useEffect } from "react";
+import { worldGridInit, selectGrid, selectTiles, setDestination, selectDestination, shiftGrid, selectPath } from "../../slices/afternoonZoologistSlice";
 
 import { useAppDispatch, useAppSelector } from "../../app/store";
 import { useGetTilesQuery } from "../../slices/afternoonZoologist.service";
@@ -14,14 +14,41 @@ export const World: React.FC = () => {
   const tiles = useAppSelector(selectTiles);
   const worldGrid = useAppSelector(selectGrid);
   const destination = useAppSelector(selectDestination);
+  const path = useAppSelector(selectPath);
   const tileSize = 30;
 
   useEffect(() => {
     dispatch(worldGridInit());
   }, [tiles]);
 
+  useEffect(() => {
+    if (path.length > 1 && path[1].tile.accessible) {
+      const dx = path[1].x - 5;
+      const dy = path[1].y - 5;
+
+      const interval = setInterval(() => {
+        dispatch(shiftGrid({ dx, dy }));
+      }, 2000);
+
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [path]);
+
   const setTileGold = (x: number, y: number) => {
-    return (x === 5 && y === 5) || (x === destination.x && y === destination.y) ? 'gold' : 'transparent';
+    if (x === 5 && y === 5) {
+      return 'gold';
+    } else if (x === destination.x && y === destination.y && destination.tile.accessible) {
+      return 'gold';
+    } else if (
+      x === destination.x && y === destination.y && !destination.tile.accessible ||
+      path[1]?.tile.accessible === false && x === path[1].x && y === path[1].y
+    ) {
+      return 'red';
+    } else {
+      return 'transparent';
+    }
   }
 
   return (
